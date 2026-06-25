@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SPECTRAL X PRO - Remote Control</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+</head>
+<body>
+    <div id="app">
+        <header class="header">
+            <div class="header-left">
+                <div class="logo-icon">⚡</div>
+                <div>
+                    <h1>SPECTRAL X PRO</h1>
+                    <span class="subtitle">Remote Control Panel</span>
+                </div>
+            </div>
+            <div class="header-right">
+                <div id="connection-status" class="status-badge disconnected">
+                    <span class="status-dot"></span>
+                    <span id="status-text">Desconectado</span>
+                </div>
+                <button id="btn-settings" class="icon-btn" onclick="toggleSettings()">⚙</button>
+            </div>
+        </header>
+
+        <div id="settings-panel" class="settings-panel hidden">
+            <div class="settings-content">
+                <h3>Configuración de Conexión</h3>
+                <label>Servidor IP
+                    <input type="text" id="server-ip" value="192.168.1.100" placeholder="IP del servidor">
+                </label>
+                <label>Puerto
+                    <input type="number" id="server-port" value="8080" placeholder="Puerto">
+                </label>
+                <button class="btn btn-primary" onclick="saveSettings()">Guardar Conexión</button>
+                <button class="btn btn-secondary" onclick="testConnection()">Probar Conexión</button>
+            </div>
+        </div>
+
+        <nav class="tabs">
+            <button class="tab active" data-tab="aimbot" onclick="switchTab('aimbot')">
+                <span class="tab-icon">🎯</span>
+                <span>Aimbot</span>
+            </button>
+            <button class="tab" data-tab="esp" onclick="switchTab('esp')">
+                <span class="tab-icon">👁</span>
+                <span>ESP</span>
+            </button>
+            <button class="tab" data-tab="chams" onclick="switchTab('chams')">
+                <span class="tab-icon">🎨</span>
+                <span>Chams</span>
+            </button>
+            <button class="tab" data-tab="misc" onclick="switchTab('misc')">
+                <span class="tab-icon">⚡</span>
+                <span>Misc</span>
+            </button>
+            <button class="tab" data-tab="system" onclick="switchTab('system')">
+                <span class="tab-icon">🔧</span>
+                <span>Sistema</span>
+            </button>
+        </nav>
+
+        <main class="content">
+            <!-- AIMBOT TAB -->
+            <section id="tab-aimbot" class="tab-content active">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Aimbot Config</h2>
+                        <div class="master-toggle">
+                            <label class="toggle">
+                                <input type="checkbox" id="aimbot-master" onchange="toggleMaster('aimbot')">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="toggle-row">
+                            <span>Aimbot 3s (Asistencia)</span>
+                            <label class="toggle">
+                                <input type="checkbox" id="aimbot-3s" data-feature="AimbotEnable3s" onchange="toggleFeature(this)">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-row">
+                            <span>Aimbot Ruby</span>
+                            <label class="toggle">
+                                <input type="checkbox" id="aimbot-ruby" data-feature="AimbotEnable" onchange="toggleFeature(this)">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-row">
+                            <span>Silent Aim</span>
+                            <label class="toggle">
+                                <input type="checkbox" id="silent-aim" data-feature="AimbotMouse" onchange="toggleFeature(this)">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-row">
+                            <span>AI Aimbot</span>
+                            <label class="toggle">
+                                <input type="checkbox" id="ai-aimbot" data-feature="AimbotAI" onchange="toggleFeature(this)">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-row">
+                            <span>Aim HEX</span>
+                            <label class="toggle">
+                                <input type="checkbox" id="aim-hex" data-feature="AimHex" onchange="toggleFeature(this)">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-row">
+                            <span>Auto HEX</span>
+                            <label class="toggle">
+                                <input type="checkbox" id="auto-hex" data-feature="AutoHEX" onchange="toggleFeature(this)">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header"><h2>Ajustes Aimbot</h2></div>
+                    <div class="card-body">
+                        <div class="slider-row">
+                            <label>FOV Radio: <span id="fov-val">150</span></label>
+                            <input type="range" id="fov-radius" min="10" max="500" value="150" data-feature="fovRadiusRgb" oninput="updateSlider(this, 'fov-val')">
+                        </div>
+                        <div class="slider-row">
+                            <label>Delay Cabeza (ms): <span id="delay-head-val">200</span></label>
+                            <input type="range" id="delay-head" min="10" max="1000" value="200" data-feature="delayToHeadMs" oninput="updateSlider(this, 'delay-head-val')">
+                        </div>
+                        <div class="slider-row">
+                            <label>Velocidad RGB FOV: <span id="rgb-speed-val">1.0</span></label>
+                            <input type="range" id="rgb-fov-speed" min="0.1" max="10" value="1" step="0.1" data-feature="rgbfovspeed" oninput="updateSlider(this, 'rgb-speed-val')">
+                        </div>
+                        <div class="select-row">
+                            <label>Modo Detección Disparo</label>
+                            <select id="fire-detection" data-feature="FireDetectionMode" onchange="selectOption(this)">
+                                <option value="0">Modo Normal</option>
+                                <option value="1">Modo AI</option>
+                            </select>
+                        </div>
+                        <div class="select-row">
+                            <label>Hueso Objetivo (AI)</label>
+                            <select id="select-bone-ai" data-feature="SelectBoneAI" onchange="selectOption(this)">
+                                <option value="0">Cabeza</option>
+                                <option value="1">Cuello</option>
+                                <option value="2">Pecho</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ESP TAB -->
+            <section id="tab-esp" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>ESP Master</h2>
+                        <div class="master-toggle">
+                            <label class="toggle">
+                                <input type="checkbox" id="esp-master" onchange="toggleMaster('esp')">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="toggle-row">
+                            <span>ESP Activo</span>
+                            <label class="toggle">
+                                <input type="checkbox" id="esp-enable" data-feature="EnableESP" onchange="toggleFeature(this)">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-row">
+                            <span>Mostrar ESP</span>
+                            <label class="toggle">
+                                <input type="checkbox" id="show-esp" data-feature="ShowESP" onchange="toggleFeature(this)">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header"><h2>Elementos ESP</h2></div>
+                    <div class="card-body">
+                        <div class="grid-toggles">
+                            <div class="toggle-col">
+                                <div class="toggle-row">
+                                    <span>Línea</span>
+                                    <label class="toggle">
+                                        <input type="checkbox" id="esp-line" data-feature="ESPLine" onchange="toggleFeature(this)">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                                <div class="toggle-row">
+                                    <span>Caja</span>
+                                    <label class="toggle">
+                                        <input type="checkbox" id="esp-box" data-feature="ESPBox" onchange="toggleFeature(this)">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                                <div class="toggle-row">
+                                    <span>Caja Llena</span>
+                                    <label class="toggle">
+                                        <input type="checkbox" id="esp-box-filled" data-feature="ESPBoxFILLED" onchange="toggleFeature(this)">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                                <div class="toggle-row">
+                                    <span>Esqueleto</span>
+                                    <label class="toggle">
+                                        <input type="checkbox" id="esp-bones" data-feature="ESPBones" onchange="toggleFeature(this)">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                                <div class="toggle-row">
+                                    <span>Vida</span>
+                                    <label class="toggle">
+                                        <input type="checkbox" id="esp-health" data-feature="ESPHealth" onchange="toggleFeature(this)">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="toggle-col">
+                                <div class="toggle-row">
+                                    <span>Arma</span>
+                                    <label class="toggle">
+                                        <input type="checkbox" id="esp-weapon" data-feature="ESPWeapon" onchange="toggleFeature(this)">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                                <div class="toggle-row">
+                                    <span>Nombre</span>
+                                    <label class="toggle">
+                                        <input type="checkbox" id="esp-name" data-feature="ESPName" onchange="toggleFeature(this)">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                                <div class="toggle-row">
+                                    <span>Distancia</span>
+                                    <label class="toggle">
+                                        <input type="checkbox" id="esp-distance" data-feature="ESPDistance" onchange="toggleFeature(this)">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                                <div class="toggle-row">
+                                    <span>Nivel</span>
+                                    <label class="toggle">
+                                        <input type="checkbox" id="esp-level" data-feature="ESPLevel" onchange="toggleFeature(this)">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                                <div class="toggle-row">
+                                    <span>Radar</span>
+                                    <label class="toggle">
+                                        <input type="checkbox" id="esp-radar" data-feature="EspRadar" onchange="toggleFeature(this)">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="toggle-row">
+                            <span>Indicador</span>
+                            <label class="toggle">
+                                <input type="checkbox" id="esp-indicator" data-feature="ESPIndicator" onchange="toggleFeature(this)">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-row">
+                            <span>Crosshair</span>
+                            <label class="toggle">
+                                <input type="checkbox" id="crosshair" data-feature="Crosshair" onchange="toggleFeature(this)">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-row">
+                            <span>Punto ESP</span>
+                            <label class="toggle">
+                                <input type="checkbox" id="punto-esp" data-feature="PuntoESP" onchange="toggleFeature(this)">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-row">
+                            <span>Mostrar Team</span>
+                            <label class="toggle">
+                                <input type="checkbox" id="show-team" data-feature="ShowTeam" onchange="toggleFeature(this)">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header"><h2>RGB & Visual</h2></div>
+                    <div class="card-body">
+                        <div class="toggle-row">
+                            <span>RGB Modo</span>
+                            <label class="toggle">
+                                <input type="checkbox" id="rgb-mode" data-feature="RgbMode" onchange="toggleFeature(this)">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-row">
+                            <span>RGB Línea</span>
+                            <label class="toggle">
+                                <input type="checkbox" id="rgb-mode-line" data-feature="RgbModeLine" onchange="toggleFeature(this)">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-row">
+                            <span>Hex Visuals</span>
+                            <label class="toggle">
+                                <input type="checkbox" id="hex-visuals" data-feature="HexVisuals" onchange="toggleFeature(this)">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-row">
+                            <span>Mostrar Invisibles</span>
+                            <label class="toggle">
+                                <input type="checkbox" id="show-invis" data-feature="ShowInvis" onchange="toggleFeature(this)">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="slider-row">
+                            <label>Velocidad RGB: <span id="rgb-speed-esp-val">1.0</span></label>
+                            <input type="range" id="rgb-speed-esp" min="0.1" max="10" value="1" step="0.1" data-feature="ESPRgbSpeedLine" oninput="updateSlider(this, 'rgb-speed-esp-val')">
+                        </div>
+                        <div class="slider-row">
+                            <label>Distancia Max: <span id="max-dist-val">150</span></label>
+                            <input type="range" id="max-distance" min="10" max="500" value="150" data-feature="maxDistance" oninput="updateSlider(this, 'max-dist-val')">
+                        </div>
+                        <div class="slider-row">
+                            <label>Tamaño Radar: <span id="radar-size-val">200</span></label>
+                            <input type="range" id="radar-size" min="100" max="400" value="200" data-feature="radarSize" oninput="updateSlider(this, 'radar-size-val')">
+                        </div>
+                        <div class="select-row">
+                            <label>Tipo de Línea</label>
+                            <select id="line-type" data-feature="lineType" onchange="selectOption(this)">
+                                <option value="0">Línea Simple</option>
+                                <option value="1">Línea Superior</option>
+                                <option value="2">Línea Centro</option>
+                            </select>
+                        </div>
+                        <div class="select-row">
+                            <label>Tipo de Caja</label>
+                            <select id="box-type" data-feature="BoxType" onchange="selectOption(this)">
+                                <option value="0">Caja Normal</option>
+                                <option value="1">Caja 3D</option>
+                                <option value="2">Caja Esquina</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CHAMS TAB -->
+            <section id="tab-chams" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Chams</h2>
+                        <div class="master-toggle">
+                            <label class="toggle">
+                                <input type="checkbox" id="chams-master" data-feature="ShowWukongOrion" onchange="toggleFeature(this)">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="chams-grid" id="chams-grid">
+                            <button class="chams-btn" data-chams="0" onclick="selectChams(this)">Chams 3D</button>
+                            <button class="chams-btn" data-chams="1" onclick="selectChams(this)">Glow</button>
+                            <button class="chams-btn" data-chams="2" onclick="selectChams(this)">Solid</button>
+                            <button class="chams-btn" data-chams="3" onclick="selectChams(this)">Lava</button>
+                            <button class="chams-btn" data-chams="4" onclick="selectChams(this)">Glitch</button>
+                            <button class="chams-btn" data-chams="5" onclick="selectChams(this)">Glitch Blanco</button>
+                            <button class="chams-btn" data-chams="6" onclick="selectChams(this)">Pick</button>
+                            <button class="chams-btn" data-chams="7" onclick="selectChams(this)">Starfield</button>
+                            <button class="chams-btn" data-chams="8" onclick="selectChams(this)">Creeper</button>
+                            <button class="chams-btn" data-chams="9" onclick="selectChams(this)">Matrix</button>
+                            <button class="chams-btn" data-chams="10" onclick="selectChams(this)">Spiderman</button>
+                            <button class="chams-btn" data-chams="11" onclick="selectChams(this)">Galaxy</button>
+                            <button class="chams-btn" data-chams="12" onclick="selectChams(this)">Golden Galaxy</button>
+                            <button class="chams-btn" data-chams="13" onclick="selectChams(this)">Wireframe</button>
+                            <button class="chams-btn" data-chams="14" onclick="selectChams(this)">Legendario</button>
+                            <button class="chams-btn" data-chams="15" onclick="selectChams(this)">Negro</button>
+                            <button class="chams-btn" data-chams="16" onclick="selectChams(this)">Glow Animado</button>
+                            <button class="chams-btn" data-chams="17" onclick="selectChams(this)">Orion</button>
+                            <button class="chams-btn" data-chams="18" onclick="selectChams(this)">Wukong</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- MISC TAB -->
+            <section id="tab-misc" class="tab-content">
+                <div class="card">
+                    <div class="card-header"><h2>Funciones Misc</h2></div>
+                    <div class="card-body">
+                        <div class="toggle-row highlight-red">
+                            <span>Speed Hack</span>
+                            <label class="toggle">
+                                <input type="checkbox" id="speed-hack" data-feature="SpeedHack" onchange="toggleFeature(this)">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-row highlight-red">
+                            <span>Balas Infinitas</span>
+                            <label class="toggle">
+                                <input type="checkbox" id="inf-bullets" data-feature="InfiniteBullets" onchange="toggleFeature(this)">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-row highlight-red">
+                            <span>NoClip (Atravesar Paredes)</span>
+                            <label class="toggle">
+                                <input type="checkbox" id="noclip" data-feature="NoClip" onchange="toggleFeature(this)">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-row highlight-red">
+                            <span>Fly Hack</span>
+                            <label class="toggle">
+                                <input type="checkbox" id="fly-hack" data-feature="FlyHack" onchange="toggleFeature(this)">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-row highlight-red">
+                            <span>Pull Enemy</span>
+                            <label class="toggle">
+                                <input type="checkbox" id="pull-enemy" data-feature="PullEnemy" onchange="toggleFeature(this)">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-row highlight-red">
+                            <span>Under Player</span>
+                            <label class="toggle">
+                                <input type="checkbox" id="under-player" data-feature="UnderPlayer" onchange="toggleFeature(this)">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-row">
+                            <span>No Recoil</span>
+                            <label class="toggle">
+                                <input type="checkbox" id="norecoil" data-feature="norecoil" onchange="toggleFeature(this)">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-row">
+                            <span>Reset Entidades (R)</span>
+                            <label class="toggle">
+                                <input type="checkbox" id="reset-entities" data-feature="ResetEntities" onchange="toggleFeature(this)">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-row">
+                            <span>Radar Movible</span>
+                            <label class="toggle">
+                                <input type="checkbox" id="radar-movable" data-feature="RadarMovible" onchange="toggleFeature(this)">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SYSTEM TAB -->
+            <section id="tab-system" class="tab-content">
+                <div class="card">
+                    <div class="card-header"><h2>Sistema</h2></div>
+                    <div class="card-body">
+                        <div class="toggle-row">
+                            <span>Stream Mode</span>
+                            <label class="toggle">
+                                <input type="checkbox" id="stream-mode" data-feature="streammode" onchange="toggleFeature(this)">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-row">
+                            <span>FPS Unlock</span>
+                            <label class="toggle">
+                                <input type="checkbox" id="fps-unlock" data-feature="ActivatedFpsUnlock" onchange="toggleFeature(this)">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-row">
+                            <span>Bloqueo de Red</span>
+                            <label class="toggle">
+                                <input type="checkbox" id="block-net" data-feature="blocknet" onchange="toggleFeature(this)">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-row">
+                            <span>Limpieza/Optimizar</span>
+                            <label class="toggle">
+                                <input type="checkbox" id="limpieza" data-feature="LimpiezaOptimizador" onchange="toggleFeature(this)">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-row">
+                            <span>Partículas de Fondo</span>
+                            <label class="toggle">
+                                <input type="checkbox" id="particles" data-feature="parti1" onchange="toggleFeature(this)">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-row">
+                            <span>Sonido Botones</span>
+                            <label class="toggle">
+                                <input type="checkbox" id="btn-sound" data-feature="botonsonido" onchange="toggleFeature(this)">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header"><h2>Atajos de Teclado</h2></div>
+                    <div class="card-body">
+                        <div class="key-row">
+                            <span>Mostrar/Ocultar Menú</span>
+                            <span class="key-badge">INSERT</span>
+                        </div>
+                        <div class="key-row">
+                            <span>Cerrar Todo</span>
+                            <span class="key-badge">DELETE</span>
+                        </div>
+                        <div class="key-row">
+                            <span>Aimbot (Ruby)</span>
+                            <span class="key-badge">F9</span>
+                        </div>
+                        <div class="key-row">
+                            <span>Aimbot (3s)</span>
+                            <span class="key-badge">F10</span>
+                        </div>
+                        <div class="key-row">
+                            <span>Reset Entidades</span>
+                            <span class="key-badge">R</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header"><h2>Emergencia</h2></div>
+                    <div class="card-body">
+                        <button class="btn btn-danger btn-full" onclick="emergencyClose()">
+                            🚨 CERRAR TODO (Emergency Kill)
+                        </button>
+                        <button class="btn btn-secondary btn-full" onclick="resetAll()">
+                            🔄 Resetear Todas las Funciones
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <div id="toast-container" class="toast-container"></div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
