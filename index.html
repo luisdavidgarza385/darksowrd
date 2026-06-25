@@ -559,6 +559,87 @@
             </section>
         </main>
 
+        <!-- SETUP GUIDE (first time) -->
+        <div id="setup-guide" class="setup-guide hidden">
+            <div class="setup-card">
+                <div class="setup-icon">⚡</div>
+                <h2>BIENVENIDO A DARKSWORD</h2>
+                <p>Para usar el panel de control necesitas correr el servidor local en tu PC.</p>
+                <div class="setup-steps">
+                    <div class="step">
+                        <span class="step-num">1</span>
+                        <div>
+                            <strong>Descarga el servidor</strong>
+                            <a href="https://github.com/luisdavidgarza385/darksowrd/archive/refs/heads/main.zip" class="btn btn-accent btn-sm" target="_blank">Descargar ZIP</a>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <span class="step-num">2</span>
+                        <div>
+                            <strong>Extrae y ejecuta</strong>
+                            <code>start.bat</code>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <span class="step-num">3</span>
+                        <div>
+                            <strong>Pone tu IP en Config</strong>
+                            <span class="text-dim">Abrí el icono ⚙ arriba a la derecha</span>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="openSetup()">Ver Guia Completa</button>
+            </div>
+        </div>
+
+        <!-- SETUP MODAL -->
+        <div id="setup-modal" class="modal hidden">
+            <div class="modal-content">
+                <button class="modal-close" onclick="closeSetup()">X</button>
+                <h2>Guia de Instalacion</h2>
+                <div class="modal-body">
+                    <div class="setup-section">
+                        <h3>Requisitos</h3>
+                        <ul>
+                            <li>Python 3.7+ instalado</li>
+                            <li>SPECTRAL X PRO corriendo en tu PC</li>
+                            <li>Celular y PC en la misma WiFi</li>
+                        </ul>
+                    </div>
+                    <div class="setup-section">
+                        <h3>Paso 1: Descargar</h3>
+                        <p>Descarga los archivos del servidor desde GitHub:</p>
+                        <a href="https://github.com/luisdavidgarza385/darksowrd/archive/refs/heads/main.zip" class="btn btn-accent" target="_blank">Descargar darksword.zip</a>
+                    </div>
+                    <div class="setup-section">
+                        <h3>Paso 2: Instalar</h3>
+                        <p>Extrae el ZIP y abre la carpeta. Ejecuta:</p>
+                        <div class="code-block">
+                            <code>pip install websocket_server</code>
+                            <button class="btn-copy" onclick="copyCommand()">Copiar</button>
+                        </div>
+                    </div>
+                    <div class="setup-section">
+                        <h3>Paso 3: Correr el servidor</h3>
+                        <p>Doble click en <code>start.bat</code> o ejecuta:</p>
+                        <div class="code-block">
+                            <code>python server.py</code>
+                        </div>
+                        <p class="text-dim">El servidor mostrara tu IP. Anotala.</p>
+                    </div>
+                    <div class="setup-section">
+                        <h3>Paso 4: Conectar</h3>
+                        <p>En la configuracion de este panel (icono ⚙), pone:</p>
+                        <ul>
+                            <li><strong>IP:</strong> La IP que mostro el servidor</li>
+                            <li><strong>Puerto:</strong> 8080</li>
+                        </ul>
+                        <p>Hace click en "Guardar Conexion" y listo!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div id="toast-container" class="toast-container"></div>
     </div>
 

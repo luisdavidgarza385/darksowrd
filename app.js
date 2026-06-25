@@ -2,8 +2,6 @@ let ws = null;
 let serverUrl = 'http://127.0.0.1:8080';
 let isConnected = false;
 let reconnectTimer = null;
-let commandBuffer = [];
-let sendTimer = null;
 
 function init() {
     const savedIp = localStorage.getItem('server-ip');
@@ -11,8 +9,23 @@ function init() {
     if (savedIp) document.getElementById('server-ip').value = savedIp;
     if (savedPort) document.getElementById('server-port').value = savedPort;
     serverUrl = `http://${savedIp || '127.0.0.1'}:${savedPort || '8080'}`;
-    connectWS();
     loadState();
+
+    if (savedIp) {
+        connectWS();
+    } else {
+        showSetupGuide();
+    }
+}
+
+function showSetupGuide() {
+    const guide = document.getElementById('setup-guide');
+    if (guide) guide.classList.remove('hidden');
+}
+
+function hideSetupGuide() {
+    const guide = document.getElementById('setup-guide');
+    if (guide) guide.classList.add('hidden');
 }
 
 function connectWS() {
@@ -23,17 +36,15 @@ function connectWS() {
         ws.onopen = () => {
             isConnected = true;
             updateStatus(true);
+            hideSetupGuide();
             showToast('Conectado al servidor', 'success');
             ws.send(JSON.stringify({ type: 'get_state' }));
         };
         ws.onmessage = (e) => {
             try {
                 const msg = JSON.parse(e.data);
-                if (msg.type === 'state') {
-                    applyState(msg.data);
-                } else if (msg.type === 'feature_update') {
-                    applyFeatureUpdate(msg.feature, msg.value);
-                }
+                if (msg.type === 'state') applyState(msg.data);
+                else if (msg.type === 'feature_update') applyFeatureUpdate(msg.feature, msg.value);
             } catch (err) {}
         };
         ws.onclose = () => {
@@ -130,7 +141,7 @@ function toggleMaster(type) {
 }
 
 function emergencyClose() {
-    if (confirm('⚠ EMERGENCY: Esto cerrará TODAS las funciones. ¿Continuar?')) {
+    if (confirm('EMERGENCY: Esto cerrara TODAS las funciones. Continuar?')) {
         sendCommand({ type: 'emergency' });
         document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
         document.querySelectorAll('.chams-btn').forEach(b => b.classList.remove('active'));
@@ -140,14 +151,10 @@ function emergencyClose() {
 }
 
 function resetAll() {
-    if (confirm('¿Resetear todas las funciones?')) {
+    if (confirm('Resetear todas las funciones?')) {
         sendCommand({ type: 'reset_all' });
         document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
         document.querySelectorAll('.chams-btn').forEach(b => b.classList.remove('active'));
-        document.querySelectorAll('input[type="range"]').forEach(slider => {
-            slider.value = slider.defaultValue;
-            const display = slider.nextElementSibling;
-        });
         saveState();
         showToast('Todas las funciones reseteadas', 'info');
     }
@@ -166,20 +173,21 @@ function toggleSettings() {
 }
 
 function saveSettings() {
-    const ip = document.getElementById('server-ip').value;
-    const port = document.getElementById('server-port').value;
+    const ip = document.getElementById('server-ip').value.trim();
+    const port = document.getElementById('server-port').value.trim();
+    if (!ip) { showToast('Pone la IP de tu PC', 'error'); return; }
     localStorage.setItem('server-ip', ip);
     localStorage.setItem('server-port', port);
     serverUrl = `http://${ip}:${port}`;
-    showToast('Configuración guardada', 'success');
+    showToast('Configuracion guardada', 'success');
     connectWS();
 }
 
 function testConnection() {
     fetch(`${serverUrl}/api/ping`)
         .then(r => r.json())
-        .then(() => showToast('Conexión exitosa!', 'success'))
-        .catch(() => showToast('No se pudo conectar al servidor', 'error'));
+        .then(() => showToast('Conexion exitosa!', 'success'))
+        .catch(() => showToast('No se pudo conectar. Corre server.py en tu PC', 'error'));
 }
 
 function saveState() {
@@ -224,16 +232,12 @@ function loadState() {
 
 function applyState(data) {
     if (!data) return;
-    Object.keys(data).forEach(feature => {
-        applyFeatureUpdate(feature, data[feature]);
-    });
+    Object.keys(data).forEach(feature => applyFeatureUpdate(feature, data[feature]));
 }
 
 function applyFeatureUpdate(feature, value) {
     const checkbox = document.querySelector(`[data-feature="${feature}"]`);
-    if (checkbox && checkbox.type === 'checkbox') {
-        checkbox.checked = !!value;
-    }
+    if (checkbox && checkbox.type === 'checkbox') checkbox.checked = !!value;
 }
 
 function showToast(message, type = 'info') {
@@ -246,6 +250,19 @@ function showToast(message, type = 'info') {
         toast.style.animation = 'toastOut 0.3s ease forwards';
         setTimeout(() => toast.remove(), 300);
     }, 2000);
+}
+
+function openSetup() {
+    document.getElementById('setup-modal').classList.remove('hidden');
+}
+
+function closeSetup() {
+    document.getElementById('setup-modal').classList.add('hidden');
+}
+
+function copyCommand() {
+    const cmd = 'pip install websocket_server && python server.py';
+    navigator.clipboard.writeText(cmd).then(() => showToast('Copiado!', 'success'));
 }
 
 document.addEventListener('DOMContentLoaded', init);

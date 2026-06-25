@@ -1,12 +1,13 @@
 """
 SPECTRAL X PRO - Web Control Server
 Servidor local que sirve el panel web y comunica comandos al programa C++
-vía archivos JSON compartidos.
+via archivos JSON compartidos.
 
 Uso:
     python server.py              # Inicia en 127.0.0.1:8080
     python server.py --port 9090  # Puerto personalizado
     python server.py --ip 0.0.0.0 # Accesible desde la red local
+    python server.py --daemon     # Modo invisible (sin ventana)
 """
 
 import json
@@ -223,7 +224,15 @@ def main():
     parser = argparse.ArgumentParser(description='SPECTRAL X PRO Web Control Server')
     parser.add_argument('--ip', default='127.0.0.1', help='IP to bind (default: 127.0.0.1)')
     parser.add_argument('--port', type=int, default=8080, help='Port (default: 8080)')
+    parser.add_argument('--daemon', action='store_true', help='Run in background (no window)')
     args = parser.parse_args()
+
+    if args.daemon:
+        if sys.platform == 'win32':
+            import ctypes
+            hwnd = ctypes.windll.kernel32.GetConsoleWindow()
+            if hwnd:
+                ctypes.windll.user32.ShowWindow(hwnd, 0)
 
     load_state()
 
