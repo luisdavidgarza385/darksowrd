@@ -255,8 +255,8 @@ def main():
         global ws_server
         ws_server = WebsocketServer(host=args.ip, port=args.port + 1)
         ws_server.set_fn_message_received(on_ws_message)
-        ws_server.set_fn_client_connected(on_ws_connect)
-        ws_server.set_fn_client_disconnected(on_ws_disconnect)
+        ws_server.set_fn_new_client(on_ws_connect)
+        ws_server.set_fn_client_left(on_ws_disconnect)
         ws_thread = threading.Thread(target=ws_server.run_forever, daemon=True)
         ws_thread.start()
         print(f"  WebSocket: ws://{local_ip}:{args.port + 1}")
